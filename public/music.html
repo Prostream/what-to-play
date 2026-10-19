@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Music | What to Play</title>
+    <script type="module" src="/music.js"></script>
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/music.html" aria-current="page">Music</a>
+      </nav>
+    </header>
+    <main>
+      <h1>Music</h1>
+      <form id="music-search">
+        <label for="music-title">Title</label>
+        <input id="music-title" name="q" type="search" />
+        <label for="music-genre">Genre</label>
+        <input id="music-genre" name="genre" type="text" />
+        <label for="music-mood">Mood</label>
+        <input id="music-mood" name="mood" type="text" />
+        <button type="submit">Search</button>
+        <button id="music-clear" type="button">Clear filters</button>
+      </form>
+      <p id="music-status" role="status" aria-live="polite"></p>
+      <ul id="music-results"></ul>
+      <nav aria-label="Music results pages">
+        <button id="music-previous" type="button" disabled>Previous</button>
+        <span id="music-page"></span>
+        <button id="music-next" type="button" disabled>Next</button>
+      </nav>
+    </main>
+  </body>
+</html>
