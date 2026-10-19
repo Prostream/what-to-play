@@ -13,5 +13,6 @@ const games = document.createElement('a');
 games.href = '/games.html';
 games.textContent = 'Discover games →';
 const music = document.createElement('p');
-music.textContent = 'Music discovery is coming soon.';
+music.textContent =
+  'Music discovery page is coming soon. The Music API is ready.';
 app.append(games, music);

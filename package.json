@@ -14,6 +14,7 @@
     "db:init:games": "node --env-file-if-exists=.env scripts/init-games-db.js",
     "data:games": "node scripts/download-games.js && prettier --write data/games.json",
     "db:seed:games": "node --env-file-if-exists=.env scripts/seed-games.js",
+    "db:seed:music": "node --env-file-if-exists=.env scripts/import-music.js",
     "test": "node --test tests/unit.test.js",
     "test:integration": "node --env-file-if-exists=.env --test tests/integration.test.js",
     "lint": "eslint .",

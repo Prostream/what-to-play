@@ -14,3 +14,7 @@ services:
         sync: false
       - key: MONGODB_DB
         value: what_to_play
+      - key: MUSIC_MONGODB_URI
+        sync: false
+      - key: MUSIC_MONGODB_DB
+        value: what_to_play_music

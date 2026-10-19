@@ -4,12 +4,16 @@ import { randomBytes } from 'node:crypto';
 import { once } from 'node:events';
 import { getDb, closeDb } from '../server/db.js';
 import { ensureIndexes } from '../server/indexes.js';
+import { getMusicDb, closeMusicDb } from '../server/music-db.js';
 
 // Every run owns a new scratch database; never use the configured app database.
 const databaseName = `what_to_play_test_${randomBytes(8).toString('hex')}`;
 process.env.MONGODB_DB = databaseName;
+const musicDatabaseName = `${databaseName}_m`;
+process.env.MUSIC_MONGODB_URI = process.env.MONGODB_URI;
+process.env.MUSIC_MONGODB_DB = musicDatabaseName;
 process.env.NODE_ENV = 'test';
-let db, server, base, games, alice, bob, savedId;
+let db, musicDb, server, base, games, alice, bob, savedId, songs;
 const password = randomBytes(16).toString('hex');
 
 async function call(path, { method = 'GET', body, cookie, headers = {} } = {}) {
@@ -71,6 +75,38 @@ before(async () => {
     },
   ]);
   games = await db.collection('games').find().sort({ steamId: 1 }).toArray();
+  musicDb = await getMusicDb();
+  await musicDb.collection('songs').insertMany([
+    {
+      title: 'Acoustic morning',
+      artist: 'Test artist',
+      sourceId: 'test-1',
+      genres: ['folk'],
+      moods: ['calm'],
+      tags: ['acoustic', 'calm'],
+    },
+    {
+      title: 'Evening strings',
+      artist: 'Test artist',
+      sourceId: 'test-2',
+      genres: ['folk'],
+      moods: ['calm'],
+      tags: ['acoustic'],
+    },
+    {
+      title: 'Fast track',
+      artist: 'Test artist',
+      sourceId: 'test-3',
+      genres: ['rock'],
+      moods: ['energetic'],
+      tags: ['loud'],
+    },
+  ]);
+  songs = await musicDb
+    .collection('songs')
+    .find()
+    .sort({ sourceId: 1 })
+    .toArray();
   const { app } = await import('../server/app.js');
   server = app.listen(0, '127.0.0.1');
   await once(server, 'listening');
@@ -79,13 +115,85 @@ before(async () => {
 
 after(async () => {
   if (server) await new Promise((resolve) => server.close(resolve));
-  if (
-    db &&
-    db.databaseName === databaseName &&
-    /^what_to_play_test_[a-f0-9]{16}$/.test(databaseName)
-  )
-    await db.dropDatabase();
-  await closeDb();
+  try {
+    if (
+      db &&
+      db.databaseName === databaseName &&
+      /^what_to_play_test_[a-f0-9]{16}$/.test(databaseName)
+    )
+      await db.dropDatabase();
+    if (
+      musicDb &&
+      musicDb.databaseName === musicDatabaseName &&
+      /^what_to_play_test_[a-f0-9]{16}_m$/.test(musicDatabaseName)
+    )
+      await musicDb.dropDatabase();
+  } finally {
+    await Promise.all([closeDb(), closeMusicDb()]);
+  }
+});
+
+test('Music search and recommendations work alongside the Games catalog', async () => {
+  const search = await call('/music?q=morning&genre=folk&mood=calm');
+  assert.equal(search.status, 200);
+  assert.deepEqual(
+    search.json.data.map((song) => song.title),
+    ['Acoustic morning'],
+  );
+  assert.equal(
+    (await call(`/music/${songs[0]._id}`)).json.data.artist,
+    'Test artist',
+  );
+  const recommended = await call(
+    '/music/recommendations?likedTag=acoustic&dislikedTag=calm',
+  );
+  assert.deepEqual(
+    recommended.json.data.map((song) => song.title),
+    ['Evening strings'],
+  );
+  assert.equal((await call('/music?limit=51')).status, 400);
+  assert.equal((await call('/games')).json.pagination.total, 4);
+  assert.equal(await db.collection('songs').countDocuments(), 0);
+  assert.equal(await musicDb.collection('games').countDocuments(), 0);
+});
+
+test('Music keeps anonymous saved CRUD, its body limit, and bodyless DELETE', async () => {
+  const created = await call('/saved-music', {
+    method: 'POST',
+    body: { itemId: songs[0]._id.toString(), notes: 'x'.repeat(17000) },
+  });
+  assert.equal(created.status, 201);
+  assert.equal(created.json.data.item.title, 'Acoustic morning');
+  const id = created.json.data.id;
+  assert.equal((await call('/saved-music')).json.pagination.total, 1);
+  assert.equal((await call(`/saved-music/${id}`)).status, 200);
+  assert.equal(
+    (
+      await call('/saved-music', {
+        method: 'POST',
+        body: { itemId: songs[0]._id.toString() },
+      })
+    ).status,
+    409,
+  );
+  const updated = await call(`/saved-music/${id}`, {
+    method: 'PATCH',
+    body: {
+      status: 'completed',
+      rating: 4,
+      personalTags: [' Weekend '],
+      notes: 'Listen again',
+    },
+  });
+  assert.equal(updated.json.data.rating, 4);
+  assert.deepEqual(updated.json.data.personalTags, ['weekend']);
+  const deleted = await fetch(`${base}/saved-music/${id}`, {
+    method: 'DELETE',
+  });
+  assert.equal(deleted.status, 200);
+  assert.equal((await deleted.json()).data.deleted, true);
+  assert.equal((await call(`/saved-music/${id}`)).status, 404);
+  assert.equal((await call('/saved-games')).status, 401);
 });
 
 test('catalog search escapes regex and validates IDs and page bounds', async () => {
