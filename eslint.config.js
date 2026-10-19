@@ -18,7 +18,12 @@ export default [
     rules: { 'no-unused-vars': ['error', { argsIgnorePattern: '^_' }] },
   },
   {
-    files: ['server/**/*.js', 'scripts/**/*.js', 'eslint.config.js'],
+    files: [
+      'server/**/*.js',
+      'scripts/**/*.js',
+      'tests/**/*.js',
+      'eslint.config.js',
+    ],
     languageOptions: { globals: globals.node },
   },
   {

@@ -2,6 +2,14 @@ import { MongoClient } from 'mongodb';
 
 let clientPromise;
 
+export async function closeMusicDb() {
+  if (clientPromise) {
+    const client = await clientPromise;
+    await client.close();
+    clientPromise = undefined;
+  }
+}
+
 export async function getMusicDb() {
   const uri = process.env.MUSIC_MONGODB_URI;
   if (!uri) {

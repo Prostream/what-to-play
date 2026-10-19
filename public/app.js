@@ -7,8 +7,17 @@ const description = document.createElement('p');
 description.textContent =
   'Find your next game or song from the ones you already like.';
 
-const musicLink = document.createElement('a');
-musicLink.href = '/music.html';
-musicLink.textContent = 'Music';
+const games = document.createElement('a');
+games.href = '/games.html';
+games.textContent = 'Discover games →';
 
-app.append(heading, description, musicLink);
+const music = document.createElement('a');
+music.href = '/music.html';
+music.textContent = 'Discover music →';
+
+const gamesEntry = document.createElement('p');
+gamesEntry.append(games);
+const musicEntry = document.createElement('p');
+musicEntry.append(music);
+
+app.append(heading, description, gamesEntry, musicEntry);

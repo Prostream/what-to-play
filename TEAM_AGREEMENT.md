@@ -2,6 +2,8 @@
 
 **Status:** Proposed for Chunzhang and Joshua to confirm before feature work. This document records the intended MVP contract; update it together if either module needs a different shared rule.
 
+**Games update:** The Games owner subsequently requested email/password accounts, private collections, favorites, and discovery from a selected game. [Games implementation notes](docs/games.md) describe these additions and supersede the single-user and tag-only scope below for Games. Music integration with accounts still requires coordination; this is not a claim of joint approval.
+
 ## Scope and ownership
 
 - Chunzhang owns Games: its page, client modules, Express routes, MongoDB queries, catalog import, and `savedGames` CRUD.
@@ -19,7 +21,7 @@
 | `games` | Games | Searchable game catalog |
 | `savedGames` | Games | Visitor's saved games; full CRUD |
 
-Each owner keeps module-specific server code, client JavaScript, and CSS separate. Music and Games use separate MongoDB databases; each module's catalog and saved collection stay in its own database. Coordinate changes to shared files such as `server/index.js`, the home navigation, `README.md`, and the design document. Music imports more than 1,000 valid songs into its own database, so the record-count requirement does not depend on adding counts across databases. Music uses `MUSIC_MONGODB_URI` and `MUSIC_MONGODB_DB` (default `what_to_play_music`); Games uses `GAMES_MONGODB_URI` and `GAMES_MONGODB_DB` (default `what_to_play_games`). These can use separate Atlas clusters or separate database names in one cluster. Do not commit connection strings.
+Each owner keeps module-specific server code, client JavaScript, and CSS separate. Music and Games use separate MongoDB databases; each module's catalog and saved collection stay in its own database. Coordinate changes to shared files such as `server/index.js`, the home navigation, `README.md`, and the design document. Music imports more than 1,000 valid songs into its own database, so the record-count requirement does not depend on adding counts across databases. Music uses `MUSIC_MONGODB_URI` and `MUSIC_MONGODB_DB` (default `what_to_play_music`); Games uses `MONGODB_URI` and `MONGODB_DB` (default `what_to_play`; local development sets `what_to_play_dev`). These can use separate Atlas clusters or separate database names in one cluster. Do not commit connection strings.
 
 ## Data contract
 

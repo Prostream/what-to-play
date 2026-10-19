@@ -2,77 +2,66 @@
 
 Discover games and music by title, genre, and tags, and track your favorites.
 
-**Team:** Chunzhang Liu (Games), Ziyong Liu (Music).
-
-**Stack:** Vanilla ES6, Node.js 24, Express, MongoDB native driver.
+**Team:** Chunzhang Liu (Games), Ziyong Liu (Music). **Stack:** Vanilla ES6, Node.js 24, Express, MongoDB native driver.
 
 **Demo:** [what-to-play-9a69.onrender.com](https://what-to-play-9a69.onrender.com)
 
 ## Run locally
 
-1. Install Node.js 24 (version pinned in `.node-version`).
-2. Run `npm ci`.
-3. Copy `.env.example` to `.env`. Set `MUSIC_MONGODB_URI` for Music and
-   `MONGODB_URI` for the current Games database scripts.
-4. Set the matching database names, then run `npm run dev`.
-5. Open [localhost:3000](http://localhost:3000).
+1. Install Node.js 24 and run `npm ci`.
+2. Copy `.env.example` to `.env`; configure each module's Atlas connection.
+3. Keep Games on `MONGODB_DB=what_to_play_dev`; set Music's database separately.
+4. Run `npm run db:seed:games` and, when Music is configured, `npm run db:seed:music`.
+5. Run `npm run dev`, then open [localhost:3000](http://localhost:3000).
 
-Scripts load `.env` automatically. Keep credentials out of Git and `public/`.
-No local MongoDB installation is needed. If using the optional portable Windows
-runtime in `.tools/node-v<VERSION>-win-x64`, activate it with
-`. .\scripts\use-node.ps1`; this runtime is not included in a fresh clone.
+Scripts load `.env` automatically. Allow your current IP in Atlas Network Access.
+No local MongoDB installation is needed. Keep credentials out of Git and `public/`.
+For the optional portable Windows runtime, run `. .\scripts\use-node.ps1`;
+the runtime is not included in a fresh clone.
 
 ## Database and commands
 
-Create an Atlas Free cluster, a database user, and allow your current IP in
-Network Access. Put each module's Node.js connection string in your ignored
-`.env` file. Music uses `MUSIC_MONGODB_URI` and `MUSIC_MONGODB_DB` (default
-`what_to_play_music`). The current Games scripts use `MONGODB_URI` and
-`MONGODB_DB`.
+| Module | Connection variables                    | Collections                                        |
+| ------ | --------------------------------------- | -------------------------------------------------- |
+| Games  | `MONGODB_URI`, `MONGODB_DB`             | `games`, `savedGames`, account/session collections |
+| Music  | `MUSIC_MONGODB_URI`, `MUSIC_MONGODB_DB` | `songs`, `savedMusic`                              |
 
-| Command                 | Purpose                                         |
-| ----------------------- | ----------------------------------------------- |
-| `npm run dev`           | Start with backend auto-restart                 |
-| `npm start`             | Start without watch mode                        |
-| `npm run db:check`      | Verify MongoDB connection and collection counts |
-| `npm run db:init:games` | Create Games indexes without deleting data      |
-| `npm run format`        | Format files with Prettier                      |
-| `npm run check`         | Run ESLint and formatting checks                |
+Use separate database names, even when both modules use one Atlas cluster.
+Music defaults to `what_to_play_music`; Games defaults to `what_to_play`.
 
-Games uses `games` and `savedGames`; Music uses `songs` and `savedMusic`.
-The Games initializer enforces one saved entry per game. The Music catalog API
-supports `GET /api/music` with optional `q`, `genre`, `mood`, `page`, and `limit`
-parameters, plus `GET /api/music/:id`. For tag recommendations, use repeated
-`likedTag` and `dislikedTag` parameters with `GET /api/music/recommendations`.
-The saved-song API supports `GET` and `POST /api/saved-music`, plus `GET`,
-`PATCH`, and `DELETE /api/saved-music/:id`. Import the Music seed data with
-`node --env-file=.env scripts/import-music.js`; see
-[`data/music/README.md`](data/music/README.md) for the source and license.
-The Music page and game features are still in progress. GitHub Actions runs code
-checks on pushes and PRs.
+| Command                                 | Purpose                                         |
+| --------------------------------------- | ----------------------------------------------- |
+| `npm run dev` / `npm start`             | Start with / without backend auto-restart       |
+| `npm run db:check`                      | Check the Games database connection and counts  |
+| `npm run db:init:games`                 | Create Games/account indexes                    |
+| `npm run db:seed:games`                 | Import 1,500 games                              |
+| `npm run db:seed:music`                 | Import the Music catalog                        |
+| `npm test` / `npm run test:integration` | Local checks / isolated Atlas integration tests |
+| `npm run format` / `npm run check`      | Format / check ESLint and formatting            |
+
+See [Games details](docs/games.md) and [Music API details](docs/music.md).
+Data sources and licenses: [Games](data/README.md), [Music](data/music/README.md).
+GitHub Actions runs formatting, lint, and local tests on pushes and PRs.
 
 ## Deployment
 
-Render serves both the frontend and API from `main` on a Free instance:
-`npm ci` installs dependencies; `npm start` runs the server. Configure
-`MUSIC_MONGODB_URI`, `MUSIC_MONGODB_DB=what_to_play_music`, the current Games
-`MONGODB_URI` and `MONGODB_DB`, and `NODE_ENV=production` in Render,
-and allow its outbound IP ranges in Atlas. `render.yaml` provides a Blueprint
-for recreating the service; do not create a duplicate of the existing service.
-
+Render serves the frontend and API from `main`: build `npm ci`, start `npm start`.
+Configure both modules' connection variables plus `NODE_ENV=production`;
+use `MONGODB_DB=what_to_play` and `MUSIC_MONGODB_DB=what_to_play_music`.
+Allow Render's outbound IP ranges in Atlas and import each production catalog once.
+`render.yaml` describes the service; do not create a duplicate of the existing one.
 After merging, verify the deployed commit; use Manual Deploy if needed.
-`/api/health` checks the server, not the database. Free instances sleep when idle,
-so open the site before a demo.
+`/api/health` checks the server, not database connectivity. Free instances sleep when idle.
 
 ## Workflow and status
 
 Develop Games on `Chunzhang` and Music on `Joshua`, then open PRs into `main`.
-See [TEAM_AGREEMENT.md](TEAM_AGREEMENT.md) for ownership and API contracts.
-
-The homepage and infrastructure are ready; the Music API is implemented.
-Remaining deliverables include game features, the Music page, design mockups,
-class link, app screenshots, code review, narrated video, and submission links.
+See [TEAM_AGREEMENT.md](TEAM_AGREEMENT.md) for module boundaries.
+Games supports guided discovery, accounts, private collections, and favorites at `/games.html`.
+YouTube opens external searches. Music search, recommendations, and shared saved-song APIs
+are implemented; its page is pending. Remaining deliverables include design mockups,
+class link, screenshots, code review, narrated video, and submission links.
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE); catalog licenses are documented separately above.
