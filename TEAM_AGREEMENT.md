@@ -2,6 +2,8 @@
 
 **Status:** Proposed for Chunzhang and Joshua to confirm before feature work. This document records the intended MVP contract; update it together if either module needs a different shared rule.
 
+**Games update:** The Games owner subsequently requested email/password accounts, private collections, favorites, and discovery from a selected game. [Games implementation notes](docs/games.md) describe these additions and supersede the single-user and tag-only scope below for Games. Music integration with accounts still requires coordination; this is not a claim of joint approval.
+
 ## Scope and ownership
 
 - Chunzhang owns Games: its page, client modules, Express routes, MongoDB queries, catalog import, and `savedGames` CRUD.
