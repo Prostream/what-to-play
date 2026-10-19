@@ -42,11 +42,14 @@ Network Access. Put each module's Node.js connection string in your ignored
 Games uses `games` and `savedGames`; Music uses `songs` and `savedMusic`.
 The Games initializer enforces one saved entry per game. The Music catalog API
 supports `GET /api/music` with optional `q`, `genre`, `mood`, `page`, and `limit`
-parameters, plus `GET /api/music/:id`. Import its seed data with
+parameters, plus `GET /api/music/:id`. For tag recommendations, use repeated
+`likedTag` and `dislikedTag` parameters with `GET /api/music/recommendations`.
+The saved-song API supports `GET` and `POST /api/saved-music`, plus `GET`,
+`PATCH`, and `DELETE /api/saved-music/:id`. Import the Music seed data with
 `node --env-file=.env scripts/import-music.js`; see
 [`data/music/README.md`](data/music/README.md) for the source and license.
-Recommendations, saved lists, and the Music page are still in progress. Game
-features are not implemented yet. GitHub Actions runs code checks on pushes and PRs.
+The Music page and game features are still in progress. GitHub Actions runs code
+checks on pushes and PRs.
 
 ## Deployment
 
@@ -66,7 +69,7 @@ so open the site before a demo.
 Develop Games on `Chunzhang` and Music on `Joshua`, then open PRs into `main`.
 See [TEAM_AGREEMENT.md](TEAM_AGREEMENT.md) for ownership and API contracts.
 
-The homepage and infrastructure are ready; the Music catalog API is implemented.
+The homepage and infrastructure are ready; the Music API is implemented.
 Remaining deliverables include game features, the Music page, design mockups,
 class link, app screenshots, code review, narrated video, and submission links.
 

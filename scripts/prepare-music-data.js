@@ -4,26 +4,33 @@ import { writeFile } from 'node:fs/promises';
 const sourceRevision = 'cafd8e20c265ed84f1e61f1c875327971f43a62f';
 const sourceBase = `https://raw.githubusercontent.com/MTG/mtg-jamendo-dataset/${sourceRevision}/data`;
 const outputFile = new URL('../data/music/songs.json', import.meta.url);
-const targetCount = 700;
+const targetCount = 1100;
 
 async function fetchText(name) {
   const response = await fetch(`${sourceBase}/${name}`);
-  if (!response.ok) throw new Error(`Could not download ${name}: HTTP ${response.status}`);
+  if (!response.ok)
+    throw new Error(`Could not download ${name}: HTTP ${response.status}`);
   return response.text();
 }
 
 function rows(content) {
-  return content.split('\n').slice(1)
+  return content
+    .split('\n')
+    .slice(1)
     .map((line) => line.replace(/\r+$/, ''))
     .filter(Boolean)
     .map((line) => line.split('\t'));
 }
 
 function valuesWithPrefix(values, prefix) {
-  return [...new Set(values
-    .filter((value) => value.startsWith(prefix))
-    .map((value) => value.slice(prefix.length).trim().toLowerCase())
-    .filter(Boolean))].sort();
+  return [
+    ...new Set(
+      values
+        .filter((value) => value.startsWith(prefix))
+        .map((value) => value.slice(prefix.length).trim().toLowerCase())
+        .filter(Boolean),
+    ),
+  ].sort();
 }
 
 const [metadataText, annotationsText] = await Promise.all([
@@ -69,7 +76,8 @@ const artistCounts = new Map();
 for (const song of candidates) {
   const songKey = `${song.artist.toLowerCase()}\0${song.title.toLowerCase()}`;
   const artistKey = song.artist.toLowerCase();
-  if (seenSongs.has(songKey) || (artistCounts.get(artistKey) ?? 0) >= 3) continue;
+  if (seenSongs.has(songKey) || (artistCounts.get(artistKey) ?? 0) >= 3)
+    continue;
   seenSongs.add(songKey);
   artistCounts.set(artistKey, (artistCounts.get(artistKey) ?? 0) + 1);
   selected.push(song);
@@ -80,6 +88,9 @@ if (selected.length !== targetCount) {
   throw new Error(`Expected ${targetCount} songs, found ${selected.length}`);
 }
 
-selected.sort((a, b) => a.title.localeCompare(b.title) || a.sourceId.localeCompare(b.sourceId));
+selected.sort(
+  (a, b) =>
+    a.title.localeCompare(b.title) || a.sourceId.localeCompare(b.sourceId),
+);
 await writeFile(outputFile, `${JSON.stringify(selected, null, 2)}\n`, 'utf8');
 console.log(`Prepared ${selected.length} songs in ${outputFile.pathname}`);
