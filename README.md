@@ -6,6 +6,10 @@ Discover games and music by title, genre, and tags, and track your favorites.
 
 **Demo:** [what-to-play-9a69.onrender.com](https://what-to-play-9a69.onrender.com)
 
+**Course:** [CS 5610 Web Development — Fall 2026](https://johnguerra.co/classes/webDevelopment_online_fall_2026/)
+
+**Design document:** [What to Play — Google Slides](https://docs.google.com/presentation/d/1FtJG7GTD5P5DrQHxpFMZYDGVY8ZwUomzaL8fEIG5ox8/edit)
+
 ## Run locally
 
 1. Install Node.js 24 and run `npm ci`.
@@ -59,8 +63,8 @@ Develop Games on `Chunzhang` and Music on `Joshua`, then open PRs into `main`.
 See [TEAM_AGREEMENT.md](TEAM_AGREEMENT.md) for module boundaries.
 Games supports guided discovery, accounts, private collections, and favorites at `/games.html`.
 YouTube opens external searches. Music search, recommendations, and shared saved-song APIs
-are implemented; its page is pending. Remaining deliverables include design mockups,
-class link, screenshots, code review, narrated video, and submission links.
+are implemented; its page is pending. Remaining deliverables include screenshots,
+code review, narrated video, and submission links.
 
 ## License
 
