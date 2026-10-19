@@ -4,34 +4,116 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Music | What to Play</title>
+    <link rel="stylesheet" href="/music.css" />
     <script type="module" src="/music.js"></script>
   </head>
   <body>
-    <header>
-      <nav aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/music.html" aria-current="page">Music</a>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-name" href="/">What to Play</a>
+        <a class="nav-link" href="/music.html" aria-current="page">Music</a>
       </nav>
     </header>
-    <main>
+    <main class="music-layout">
       <h1>Music</h1>
-      <form id="music-search">
-        <label for="music-title">Title</label>
-        <input id="music-title" name="q" type="search" />
-        <label for="music-genre">Genre</label>
-        <input id="music-genre" name="genre" type="text" />
-        <label for="music-mood">Mood</label>
-        <input id="music-mood" name="mood" type="text" />
-        <button type="submit">Search</button>
-        <button id="music-clear" type="button">Clear filters</button>
-      </form>
-      <p id="music-status" role="status" aria-live="polite"></p>
-      <ul id="music-results"></ul>
-      <nav aria-label="Music results pages">
-        <button id="music-previous" type="button" disabled>Previous</button>
-        <span id="music-page"></span>
-        <button id="music-next" type="button" disabled>Next</button>
-      </nav>
+      <section class="music-panel" aria-labelledby="saved-heading">
+        <h2 id="saved-heading">Saved songs</h2>
+        <p
+          id="saved-status"
+          class="result-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <ul id="saved-results" class="song-list"></ul>
+        <nav
+          id="saved-pagination"
+          class="pagination"
+          aria-label="Saved songs pages"
+          hidden
+        >
+          <button id="saved-previous" type="button" disabled>Previous</button>
+          <span id="saved-page"></span>
+          <button id="saved-next" type="button" disabled>Next</button>
+        </nav>
+      </section>
+      <section class="music-panel" aria-labelledby="search-heading">
+        <h2 id="search-heading">Browse songs</h2>
+        <form id="music-search" class="filter-form">
+          <div class="form-fields">
+            <div class="form-field">
+              <label for="music-title">Title</label>
+              <input id="music-title" name="q" type="search" />
+            </div>
+            <div class="form-field">
+              <label for="music-genre">Genre</label>
+              <input id="music-genre" name="genre" type="text" />
+            </div>
+            <div class="form-field">
+              <label for="music-mood">Mood</label>
+              <input id="music-mood" name="mood" type="text" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="primary-button" type="submit">Search</button>
+            <button class="secondary-button" id="music-clear" type="button">
+              Clear filters
+            </button>
+          </div>
+        </form>
+        <p
+          id="music-status"
+          class="result-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <ul id="music-results" class="song-list"></ul>
+        <nav class="pagination" aria-label="Music results pages">
+          <button id="music-previous" type="button" disabled>Previous</button>
+          <span id="music-page"></span>
+          <button id="music-next" type="button" disabled>Next</button>
+        </nav>
+      </section>
+      <section class="music-panel" aria-labelledby="recommendations-heading">
+        <h2 id="recommendations-heading">Recommendations by tag</h2>
+        <form id="recommendations-form" class="filter-form">
+          <div class="form-fields">
+            <div class="form-field">
+              <label for="liked-tags">Tags you like</label>
+              <input
+                id="liked-tags"
+                name="likedTags"
+                type="text"
+                aria-describedby="recommendations-hint"
+                required
+              />
+            </div>
+            <div class="form-field">
+              <label for="disliked-tags">Tags you dislike</label>
+              <input id="disliked-tags" name="dislikedTags" type="text" />
+            </div>
+          </div>
+          <p id="recommendations-hint">Separate multiple tags with commas.</p>
+          <div class="form-actions">
+            <button class="primary-button" type="submit">
+              Find recommendations
+            </button>
+          </div>
+        </form>
+        <p
+          id="recommendations-status"
+          class="result-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <ul id="recommendations-results" class="song-list"></ul>
+        <nav class="pagination" aria-label="Recommendation pages">
+          <button id="recommendations-previous" type="button" disabled>
+            Previous
+          </button>
+          <span id="recommendations-page"></span>
+          <button id="recommendations-next" type="button" disabled>Next</button>
+        </nav>
+      </section>
     </main>
   </body>
 </html>
