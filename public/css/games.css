@@ -314,12 +314,6 @@ h1 em {
 .primary:hover {
   background: #67e8f9;
 }
-.chat-footnote {
-  color: #95a5bd;
-  font-size: 10px;
-  padding: 13px 25px 17px;
-  margin: 0;
-}
 .chat-search {
   width: 100%;
   display: flex;
@@ -736,9 +730,6 @@ dialog form {
   }
   .bubble {
     max-width: 97%;
-  }
-  .chat-footnote {
-    padding-inline: 17px;
   }
   .game-grid {
     grid-template-columns: repeat(2, 1fr);
