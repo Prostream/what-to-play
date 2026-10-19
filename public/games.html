@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>Discover games · What to Play</title>
+    <link rel="stylesheet" href="/css/games.css" />
+    <script type="module" src="/js/games.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="backdrop" aria-hidden="true">
+      <div id="collage" class="collage"></div>
+    </div>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="What to Play home"
+        ><span class="brand-icon">W</span> what to play<span class="brand-dot"
+          >.</span
+        ></a
+      >
+      <nav aria-label="Games">
+        <button type="button" data-view="discover" aria-current="page">
+          Discover
+        </button>
+        <button type="button" data-view="browse">Browse</button>
+        <button type="button" data-view="saved">Saved games</button>
+        <button type="button" data-view="favorites">Favorites</button>
+      </nav>
+      <div class="account">
+        <span id="account-email"></span
+        ><button type="button" id="account-button" class="outline">
+          Sign in
+        </button>
+      </div>
+    </header>
+    <main id="main">
+      <section id="discover-view" class="view">
+        <div class="hero">
+          <p class="eyebrow">LESS SCROLLING. MORE PLAYING.</p>
+          <h1>Your next <em>great game.</em></h1>
+          <p>
+            A familiar favorite, a new adventure, or a little inspiration.<br />Let’s
+            find what you’re in the mood for.
+          </p>
+        </div>
+        <section class="conversation" aria-labelledby="chat-title">
+          <div class="chat-header">
+            <h2 id="chat-title">
+              <span class="online-dot"></span> Your game guide
+            </h2>
+            <button type="button" id="restart" class="text-button">
+              Start over ↺
+            </button>
+          </div>
+          <div
+            id="chat-log"
+            role="log"
+            aria-label="Conversation"
+            aria-live="polite"
+          ></div>
+          <div id="chat-controls"></div>
+          <p class="chat-footnote">
+            A few choices. Recommendations matched by game tags.
+          </p>
+        </section>
+      </section>
+      <section id="browse-view" class="view" hidden>
+        <div class="section-intro">
+          <p class="eyebrow">THE GAME SHELF</p>
+          <h1>Find your favorites.</h1>
+          <p>Search the catalog by title, genre, or tag.</p>
+        </div>
+        <form id="browse-form" class="browse-form">
+          <label
+            >Game title<input
+              name="q"
+              type="search"
+              maxlength="100"
+              placeholder="Search games…" /></label
+          ><label
+            >Genre<select name="genre" id="browse-genre">
+              <option value="">All genres</option>
+            </select></label
+          ><label
+            >Tag<select name="tag" id="browse-tag">
+              <option value="">All tags</option>
+            </select></label
+          ><button class="primary">Search</button>
+        </form>
+      </section>
+      <section id="saved-view" class="view" hidden>
+        <div class="section-intro">
+          <p class="eyebrow">YOUR OWN LITTLE COLLECTION</p>
+          <h1 id="saved-heading">Saved games.</h1>
+          <p>
+            Keep your next adventure close. Add ratings, notes, and favorites.
+          </p>
+        </div>
+      </section>
+      <section id="results" aria-labelledby="results-heading" hidden>
+        <div class="results-header">
+          <div>
+            <p id="results-caption" class="eyebrow"></p>
+            <h2 id="results-heading">Your next adventure</h2>
+          </div>
+          <span id="results-count"></span>
+        </div>
+        <p id="results-status" role="status"></p>
+        <div id="game-grid" class="game-grid"></div>
+        <div id="pagination" class="pagination"></div>
+      </section>
+      <p id="app-status" role="status" class="app-status"></p>
+    </main>
+    <footer>
+      <span>Made for the joy of finding something new.</span>
+      <div>
+        <span id="catalog-count">Steam game catalog</span>
+        <a href="/credits.html">Data credits</a>
+        <button type="button" id="motion-toggle" aria-pressed="false">
+          Pause background
+        </button>
+      </div>
+    </footer>
+    <dialog id="auth-dialog" aria-labelledby="auth-title">
+      <button
+        type="button"
+        class="dialog-close"
+        data-close="auth-dialog"
+        aria-label="Close sign in"
+      >
+        ×
+      </button>
+      <p class="eyebrow">MAKE IT YOURS</p>
+      <h2 id="auth-title">Welcome back.</h2>
+      <p id="auth-description">Sign in to keep your games in one place.</p>
+      <form id="auth-form">
+        <label
+          >Email<input
+            name="email"
+            type="email"
+            autocomplete="email"
+            maxlength="254"
+            required /></label
+        ><label
+          >Password<input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            minlength="8"
+            maxlength="128"
+            required
+        /></label>
+        <p class="form-hint">
+          8–128 characters. Email verification and password reset are not
+          available in this demo.
+        </p>
+        <p id="auth-error" class="error" role="alert"></p>
+        <button class="primary" id="auth-submit">Sign in</button>
+      </form>
+      <button type="button" id="auth-switch" class="text-button">
+        New here? Create an account
+      </button>
+    </dialog>
+    <dialog id="edit-dialog" aria-labelledby="edit-title">
+      <button
+        type="button"
+        class="dialog-close"
+        data-close="edit-dialog"
+        aria-label="Close game editor"
+      >
+        ×
+      </button>
+      <p class="eyebrow">YOUR GAME NOTES</p>
+      <h2 id="edit-title"></h2>
+      <form id="edit-form">
+        <div class="form-row">
+          <label
+            >Status<select name="status">
+              <option value="planned">Want to play</option>
+              <option value="completed">Played</option>
+            </select></label
+          ><label
+            >Rating<select name="rating">
+              <option value="">Not rated</option>
+              <option value="1">1 / 5</option>
+              <option value="2">2 / 5</option>
+              <option value="3">3 / 5</option>
+              <option value="4">4 / 5</option>
+              <option value="5">5 / 5</option>
+            </select></label
+          >
+        </div>
+        <label
+          >Personal tags<input
+            name="personalTags"
+            maxlength="500"
+            placeholder="weekend, play with friends" /></label
+        ><span class="form-hint">Separate tags with commas.</span
+        ><label
+          >Notes<textarea
+            name="notes"
+            rows="3"
+            maxlength="2000"
+          ></textarea></label
+        ><label class="check-label"
+          ><input name="favorite" type="checkbox" /> Add to favorites</label
+        >
+        <p id="edit-error" class="error" role="alert"></p>
+        <div class="form-row">
+          <button class="primary">Save changes</button
+          ><button type="button" id="remove-game" class="danger">
+            Remove game
+          </button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

@@ -1,13 +1,10 @@
 import { getDb, closeDb } from '../server/db.js';
+import { ensureIndexes } from '../server/indexes.js';
 
 try {
-  const db = await getDb();
-  await db.collection('games').createIndex({ title: 1, _id: 1 });
-  await db
-    .collection('savedGames')
-    .createIndex({ itemId: 1 }, { unique: true });
+  await ensureIndexes(await getDb());
   console.log(
-    'Games collections and indexes are ready. Existing records were preserved.',
+    'Games and account indexes are ready. Existing records were preserved.',
   );
 } catch {
   console.error(
