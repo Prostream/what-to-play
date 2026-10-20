@@ -102,7 +102,7 @@ export async function requireUser(req, _res, next) {
     throw fail(
       401,
       'UNAUTHORIZED',
-      'Sign in to save games and view your collection.',
+      'Sign in to view and save your collection.',
     );
   next();
 }

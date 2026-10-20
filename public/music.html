@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>Discover music | What to Play</title>
+    <link rel="stylesheet" href="/music.css" />
+    <link rel="stylesheet" href="/music-discover.css" />
+    <script type="module" src="/music.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="What to Play home">
+        <span class="brand-icon">W</span>
+        <span>what to play<span class="brand-dot">.</span></span>
+      </a>
+      <nav aria-label="Music">
+        <button type="button" data-view="discover" aria-current="page">
+          Discover
+        </button>
+        <button type="button" data-view="browse">Browse</button>
+        <button type="button" data-view="saved">Saved music</button>
+      </nav>
+      <div class="header-actions">
+        <a class="games-link" href="/games.html">Games</a>
+        <span id="music-account-email"></span>
+        <button id="music-account-button" type="button" class="games-link">
+          Sign in
+        </button>
+      </div>
+    </header>
+    <main id="main">
+      <section
+        id="discover-view"
+        class="view"
+        aria-labelledby="discover-heading"
+      >
+        <div class="hero">
+          <p class="eyebrow">LESS SCROLLING. MORE LISTENING.</p>
+          <h1 id="discover-heading">Your next <em>great song.</em></h1>
+          <p>A little inspiration for your next listen.</p>
+        </div>
+        <section class="guide" aria-labelledby="guide-heading">
+          <div class="guide-header">
+            <h2 id="guide-heading">
+              <span class="online-dot"></span>Your music guide
+            </h2>
+          </div>
+          <div class="guide-body">
+            <p class="bubble">
+              Not sure what to listen to? Pick a starting point.
+            </p>
+            <div class="guide-actions">
+              <button id="surprise-me" class="choice" type="button">
+                Surprise me →
+              </button>
+              <button
+                id="choose-mood"
+                class="choice"
+                type="button"
+                aria-expanded="false"
+                aria-controls="mood-options"
+              >
+                Choose my mood
+              </button>
+            </div>
+            <div
+              id="mood-options"
+              class="mood-options"
+              role="group"
+              aria-label="Current mood"
+              hidden
+            >
+              <button type="button" data-mood="relaxing">Relaxed</button>
+              <button type="button" data-mood="energetic">Energetic</button>
+              <button type="button" data-mood="happy">Happy</button>
+              <button type="button" data-mood="dream">Dreamy</button>
+              <button type="button" data-mood="sad">Sad</button>
+            </div>
+            <p id="discover-status" role="status" aria-live="polite"></p>
+            <ul id="discover-results" class="song-list"></ul>
+          </div>
+          <p class="guide-footnote">
+            Five songs at a time. Hover or focus a song to save or blacklist it.
+          </p>
+        </section>
+      </section>
+      <section
+        id="browse-view"
+        class="view"
+        aria-labelledby="search-heading"
+        hidden
+      >
+        <div class="section-intro">
+          <p class="eyebrow">THE MUSIC SHELF</p>
+          <h1 id="search-heading">Browse songs.</h1>
+          <p>
+            Search by title, genre, or mood when you have something in mind.
+          </p>
+        </div>
+        <section class="music-panel" aria-label="Song search">
+          <form id="music-search" class="filter-form">
+            <div class="form-fields">
+              <div class="form-field">
+                <label for="music-title">Title</label>
+                <input id="music-title" name="q" type="search" />
+              </div>
+              <div class="form-field">
+                <label for="music-genre">Genre</label>
+                <input id="music-genre" name="genre" type="text" />
+              </div>
+              <div class="form-field">
+                <label for="music-mood">Mood</label>
+                <input id="music-mood" name="mood" type="text" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="primary-button" type="submit">Search</button>
+              <button class="secondary-button" id="music-clear" type="button">
+                Clear filters
+              </button>
+            </div>
+          </form>
+          <p
+            id="music-status"
+            class="result-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <ul id="music-results" class="song-list"></ul>
+          <nav class="pagination" aria-label="Music results pages">
+            <button id="music-previous" type="button" disabled>Previous</button>
+            <span id="music-page"></span>
+            <button id="music-next" type="button" disabled>Next</button>
+          </nav>
+        </section>
+        <details class="music-panel advanced-search">
+          <summary>Search by tags</summary>
+          <section aria-labelledby="recommendations-heading">
+            <h2 id="recommendations-heading">Recommendations by tag</h2>
+            <form id="recommendations-form" class="filter-form">
+              <div class="form-fields">
+                <div class="form-field">
+                  <label for="liked-tags">Tags you like</label>
+                  <input
+                    id="liked-tags"
+                    name="likedTags"
+                    type="text"
+                    aria-describedby="recommendations-hint"
+                    required
+                  />
+                </div>
+                <div class="form-field">
+                  <label for="disliked-tags">Tags you dislike</label>
+                  <input id="disliked-tags" name="dislikedTags" type="text" />
+                </div>
+              </div>
+              <p id="recommendations-hint">
+                Separate multiple tags with commas.
+              </p>
+              <div class="form-actions">
+                <button class="primary-button" type="submit">
+                  Find recommendations
+                </button>
+              </div>
+            </form>
+            <p
+              id="recommendations-status"
+              class="result-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+            <ul id="recommendations-results" class="song-list"></ul>
+            <nav class="pagination" aria-label="Recommendation pages">
+              <button id="recommendations-previous" type="button" disabled>
+                Previous
+              </button>
+              <span id="recommendations-page"></span>
+              <button id="recommendations-next" type="button" disabled>
+                Next
+              </button>
+            </nav>
+          </section>
+        </details>
+      </section>
+      <section
+        id="saved-view"
+        class="view"
+        aria-labelledby="saved-heading"
+        hidden
+      >
+        <div class="section-intro">
+          <p class="eyebrow">YOUR MUSIC COLLECTION</p>
+          <h1 id="saved-heading">Saved music.</h1>
+          <p>Keep songs close and add your listening notes.</p>
+        </div>
+        <section class="music-panel" aria-label="Saved songs">
+          <p
+            id="saved-status"
+            class="result-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <ul id="saved-results" class="song-list"></ul>
+          <nav
+            id="saved-pagination"
+            class="pagination"
+            aria-label="Saved songs pages"
+            hidden
+          >
+            <button id="saved-previous" type="button" disabled>Previous</button>
+            <span id="saved-page"></span>
+            <button id="saved-next" type="button" disabled>Next</button>
+          </nav>
+        </section>
+        <button
+          id="blacklist-toggle"
+          class="secondary-button blacklist-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="blacklist-panel"
+        >
+          View blacklist
+        </button>
+        <section
+          id="blacklist-panel"
+          class="music-panel"
+          aria-label="Blacklisted songs"
+          hidden
+        >
+          <h2>Blacklisted songs</h2>
+          <p
+            id="blacklist-status"
+            class="result-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <ul id="blacklist-results" class="song-list"></ul>
+          <nav
+            id="blacklist-pagination"
+            class="pagination"
+            aria-label="Blacklist pages"
+            hidden
+          >
+            <button id="blacklist-previous" type="button" disabled>
+              Previous
+            </button>
+            <span id="blacklist-page"></span>
+            <button id="blacklist-next" type="button" disabled>Next</button>
+          </nav>
+        </section>
+      </section>
+    </main>
+    <footer>
+      <span>Made for the joy of finding something new.</span>
+      <div>
+        <span id="catalog-count">Music catalog</span>
+        <a href="/credits.html">Data credits</a>
+      </div>
+    </footer>
+    <dialog id="music-auth-dialog" aria-labelledby="music-auth-title">
+      <button id="music-auth-close" type="button" aria-label="Close sign in">
+        ×
+      </button>
+      <h2 id="music-auth-title">Welcome back.</h2>
+      <p>One account for your games and music.</p>
+      <form id="music-auth-form">
+        <label>
+          Email
+          <input
+            name="email"
+            type="email"
+            autocomplete="email"
+            maxlength="254"
+            required
+          />
+        </label>
+        <label>
+          Password
+          <input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            minlength="8"
+            maxlength="128"
+            required
+          />
+        </label>
+        <p id="music-auth-error" role="alert"></p>
+        <button id="music-auth-submit" type="submit" class="primary-button">
+          Sign in
+        </button>
+      </form>
+      <button id="music-auth-switch" type="button" class="secondary-button">
+        New here? Create an account
+      </button>
+    </dialog>
+  </body>
+</html>

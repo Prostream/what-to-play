@@ -157,43 +157,26 @@ test('Music search and recommendations work alongside the Games catalog', async 
   assert.equal(await musicDb.collection('games').countDocuments(), 0);
 });
 
-test('Music keeps anonymous saved CRUD, its body limit, and bodyless DELETE', async () => {
-  const created = await call('/saved-music', {
-    method: 'POST',
-    body: { itemId: songs[0]._id.toString(), notes: 'x'.repeat(17000) },
-  });
-  assert.equal(created.status, 201);
-  assert.equal(created.json.data.item.title, 'Acoustic morning');
-  const id = created.json.data.id;
-  assert.equal((await call('/saved-music')).json.pagination.total, 1);
-  assert.equal((await call(`/saved-music/${id}`)).status, 200);
-  assert.equal(
-    (
-      await call('/saved-music', {
-        method: 'POST',
-        body: { itemId: songs[0]._id.toString() },
-      })
-    ).status,
-    409,
-  );
-  const updated = await call(`/saved-music/${id}`, {
-    method: 'PATCH',
-    body: {
-      status: 'completed',
-      rating: 4,
-      personalTags: [' Weekend '],
-      notes: 'Listen again',
-    },
-  });
-  assert.equal(updated.json.data.rating, 4);
-  assert.deepEqual(updated.json.data.personalTags, ['weekend']);
-  const deleted = await fetch(`${base}/saved-music/${id}`, {
-    method: 'DELETE',
-  });
-  assert.equal(deleted.status, 200);
-  assert.equal((await deleted.json()).data.deleted, true);
-  assert.equal((await call(`/saved-music/${id}`)).status, 404);
-  assert.equal((await call('/saved-games')).status, 401);
+test('Music discovery stays public while collections require sign in', async () => {
+  const initial = await call('/music/discover');
+  assert.equal(initial.status, 200);
+  assert.equal(initial.json.data.length, 3);
+  assert.equal(new Set(initial.json.data.map((song) => song.id)).size, 3);
+  const calm = await call('/music/discover?mood=calm');
+  assert.equal(calm.json.data.length, 2);
+  assert.ok(calm.json.data.every((song) => song.moods.includes('calm')));
+  for (const path of ['/saved-music', '/blacklisted-music']) {
+    assert.equal((await call(path)).status, 401);
+    assert.equal(
+      (
+        await call(path, {
+          method: 'POST',
+          body: { itemId: songs[0]._id.toString() },
+        })
+      ).status,
+      401,
+    );
+  }
 });
 
 test('catalog search escapes regex and validates IDs and page bounds', async () => {
@@ -297,6 +280,167 @@ test('registration creates safe sessions and normalizes email', async () => {
       body: { email: 'bob@example.test', password },
     })
   ).cookie;
+});
+
+test('one account works for both modules and Music collections stay private', async () => {
+  const itemId = songs[0]._id.toString();
+  await musicDb
+    .collection('savedMusic')
+    .createIndex({ itemId: 1 }, { unique: true });
+  await musicDb.collection('savedMusic').insertOne({
+    itemId: songs[1]._id,
+    status: 'planned',
+    rating: null,
+    personalTags: [],
+    notes: 'Old anonymous record',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  await musicDb.collection('blacklistedMusic').insertOne({
+    _id: songs[1]._id,
+    createdAt: new Date(),
+  });
+  await musicDb.collection('blacklistedMusic').insertOne({
+    _id: songs[2]._id,
+    createdAt: new Date(),
+  });
+  assert.equal((await call('/saved-games', { cookie: alice })).status, 200);
+  assert.equal(
+    (await call('/saved-music', { cookie: alice })).json.pagination.total,
+    0,
+  );
+  assert.equal(
+    (await call('/blacklisted-music', { cookie: alice })).json.pagination.total,
+    0,
+  );
+
+  const created = await call('/saved-music', {
+    method: 'POST',
+    cookie: alice,
+    body: { itemId, notes: 'x'.repeat(17000) },
+  });
+  assert.equal(created.status, 201);
+  const id = created.json.data.id;
+  assert.equal(
+    (
+      await call('/saved-music', {
+        method: 'POST',
+        cookie: alice,
+        body: { itemId },
+      })
+    ).status,
+    409,
+  );
+  assert.equal(
+    (
+      await call('/saved-music', {
+        method: 'POST',
+        cookie: bob,
+        body: { itemId },
+      })
+    ).status,
+    201,
+  );
+  assert.equal(
+    (await call('/saved-music', { cookie: bob })).json.pagination.total,
+    1,
+  );
+  for (const method of ['GET', 'PATCH', 'DELETE']) {
+    assert.equal(
+      (
+        await call(`/saved-music/${id}`, {
+          method,
+          cookie: bob,
+          body: { notes: 'not yours' },
+        })
+      ).status,
+      404,
+    );
+  }
+  const updated = await call(`/saved-music/${id}`, {
+    method: 'PATCH',
+    cookie: alice,
+    body: {
+      status: 'completed',
+      rating: 4,
+      personalTags: [' Weekend '],
+      notes: 'Again',
+    },
+  });
+  assert.equal(updated.json.data.rating, 4);
+  assert.deepEqual(updated.json.data.personalTags, ['weekend']);
+
+  const blocked = await call('/blacklisted-music', {
+    method: 'POST',
+    cookie: alice,
+    body: { itemId },
+  });
+  assert.equal(blocked.status, 201);
+  assert.equal(
+    (await call('/blacklisted-music', { cookie: alice })).json.pagination.total,
+    1,
+  );
+  assert.equal(
+    (await call('/blacklisted-music', { cookie: bob })).json.pagination.total,
+    0,
+  );
+  assert.equal(
+    (
+      await call('/blacklisted-music', {
+        method: 'POST',
+        cookie: bob,
+        body: { itemId },
+      })
+    ).status,
+    201,
+  );
+  assert.equal(
+    (await call('/music/discover', { cookie: alice })).json.data.length,
+    2,
+  );
+  assert.equal((await call('/music/discover')).json.data.length, 3);
+  assert.equal(
+    (await call('/music/recommendations?likedTag=acoustic', { cookie: alice }))
+      .json.data.length,
+    1,
+  );
+  assert.equal(
+    (
+      await call(`/blacklisted-music/${itemId}`, {
+        method: 'DELETE',
+        cookie: bob,
+      })
+    ).status,
+    200,
+  );
+  assert.equal(
+    (await call('/blacklisted-music', { cookie: alice })).json.pagination.total,
+    1,
+  );
+  assert.equal(
+    (
+      await call(`/blacklisted-music/${itemId}`, {
+        method: 'DELETE',
+        cookie: alice,
+      })
+    ).status,
+    200,
+  );
+  assert.equal(
+    (await call(`/saved-music/${id}`, { method: 'DELETE', cookie: alice }))
+      .status,
+    200,
+  );
+  assert.equal(
+    (await call(`/saved-music/${id}`, { cookie: alice })).status,
+    404,
+  );
+  assert.equal(
+    await musicDb
+      .collection('savedMusic')
+      .countDocuments({ userId: { $exists: false } }),
+    1,
+  );
 });
 
 test('saved CRUD is private and each user can save the same game once', async () => {

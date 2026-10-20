@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
+import { currentUser } from './auth/routes.js';
 import { getMusicDb } from './music-db.js';
 
 export const musicRouter = Router();
@@ -103,6 +104,30 @@ musicRouter.get('/', async (req, res) => {
   }
 });
 
+musicRouter.get('/discover', async (req, res) => {
+  const mood = parseFilter(req.query.mood, 50);
+  if (mood === null) return validationError(res, 'Invalid mood.');
+
+  try {
+    const db = await getMusicDb();
+    const user = await currentUser(req);
+    const blockedIds = user
+      ? await db
+          .collection('blacklistedMusic')
+          .distinct('itemId', { userId: new ObjectId(user.id) })
+      : [];
+    const filter = { _id: { $nin: blockedIds } };
+    if (mood) filter.moods = mood.toLowerCase();
+    const items = await db
+      .collection('songs')
+      .aggregate([{ $match: filter }, { $sample: { size: 5 } }])
+      .toArray();
+    return res.json({ data: items.map(serializeSong) });
+  } catch (error) {
+    return serverError(res, error);
+  }
+});
+
 musicRouter.get('/recommendations', async (req, res) => {
   const page = parsePageNumber(req.query.page, 1, Number.MAX_SAFE_INTEGER);
   const limit = parsePageNumber(req.query.limit, 20, 50);
@@ -133,7 +158,16 @@ musicRouter.get('/recommendations', async (req, res) => {
 
   const filter = { tags: { $in: wantedTags, $nin: dislikedTags } };
   try {
-    const songs = (await getMusicDb()).collection('songs');
+    const db = await getMusicDb();
+    const user = await currentUser(req);
+    filter._id = {
+      $nin: user
+        ? await db
+            .collection('blacklistedMusic')
+            .distinct('itemId', { userId: new ObjectId(user.id) })
+        : [],
+    };
+    const songs = db.collection('songs');
     const total = await songs.countDocuments(filter);
     const items = await songs
       .aggregate([

@@ -1,0 +1,297 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+a {
+  color: #22d3ee;
+}
+
+:focus-visible {
+  outline: 3px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+.site-header {
+  border-bottom: 1px solid #334155;
+}
+
+.site-nav {
+  width: min(100% - 2rem, 72rem);
+  min-height: 4rem;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.site-name {
+  margin-right: auto;
+  color: #f8fafc;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav-link {
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+
+.nav-link[aria-current='page'] {
+  background: #1e293b;
+  color: #22d3ee;
+}
+
+.music-layout {
+  width: min(100% - 2rem, 72rem);
+  margin: 2rem auto 4rem;
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+}
+
+h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.35rem;
+}
+
+.music-panel {
+  margin-bottom: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid #334155;
+  border-radius: 1rem;
+  background: #1e293b;
+}
+
+.form-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.form-field label {
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #64748b;
+  border-radius: 0.5rem;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.form-field textarea {
+  resize: vertical;
+}
+
+#recommendations-hint {
+  margin: 0.75rem 0 0;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.form-actions button,
+.pagination button {
+  min-height: 2.75rem;
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.primary-button {
+  border: 1px solid #22d3ee;
+  background: #22d3ee;
+  color: #082f49;
+}
+
+.secondary-button,
+.pagination button {
+  border: 1px solid #a78bfa;
+  background: transparent;
+  color: #f8fafc;
+}
+
+.delete-button {
+  border: 1px solid #fca5a5;
+  background: transparent;
+  color: #fecaca;
+}
+
+.result-status {
+  margin: 1.25rem 0;
+  color: #cbd5e1;
+}
+
+.result-status:empty {
+  display: none;
+}
+
+.result-status[data-state='error'] {
+  color: #fecaca;
+}
+
+.result-status[data-state='empty'] {
+  padding: 1rem;
+  border: 1px dashed #64748b;
+  border-radius: 0.5rem;
+}
+
+.song-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.song-list > li {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #475569;
+  border-radius: 0.75rem;
+  background: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.song-list strong {
+  display: block;
+  color: #f8fafc;
+}
+
+.song-list span {
+  display: block;
+  color: #cbd5e1;
+}
+
+.song-list button {
+  min-height: 2.5rem;
+  margin-top: 0.85rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.saved-detail,
+.save-feedback {
+  margin: 0.65rem 0 0;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.save-feedback:empty {
+  display: none;
+}
+
+.save-feedback[data-state='error'] {
+  color: #fecaca;
+}
+
+.saved-editor {
+  margin-top: 0.85rem;
+}
+
+.saved-editor summary {
+  color: #a78bfa;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.saved-form {
+  margin-top: 1rem;
+}
+
+.saved-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.pagination[hidden] {
+  display: none;
+}
+
+.pagination span {
+  min-width: 8rem;
+  text-align: center;
+}
+
+@media (max-width: 40rem) {
+  .music-layout {
+    margin-top: 1.5rem;
+  }
+
+  .form-fields,
+  .saved-fields,
+  .song-list {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+
+  .pagination {
+    gap: 0.5rem;
+  }
+
+  .pagination span {
+    min-width: 0;
+  }
+}
