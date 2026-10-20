@@ -1,3 +1,5 @@
+import { musicSignedIn, requireMusicUser } from './music-auth.js';
+
 const status = document.querySelector('#saved-status');
 const results = document.querySelector('#saved-results');
 const previousButton = document.querySelector('#saved-previous');
@@ -169,6 +171,8 @@ function makeSavedItem(saved) {
     try {
       const response = await fetch(`/api/saved-music/${saved.id}`, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
       });
       const body = await response.json();
       if (!response.ok) {
@@ -209,6 +213,7 @@ function showSavedSongs(body) {
 }
 
 export async function loadSavedMusic(page = 1) {
+  if (!musicSignedIn()) return;
   const thisRequest = ++requestId;
   setStatus('Loading saved songs…', 'loading');
   previousButton.disabled = true;
@@ -244,6 +249,7 @@ export function addSaveButton(item, song) {
   item.append(button, feedback);
 
   button.addEventListener('click', async () => {
+    if (!requireMusicUser(() => button.click())) return;
     button.disabled = true;
     feedback.textContent = 'Saving…';
     feedback.dataset.state = 'loading';
@@ -293,5 +299,3 @@ function resetSaveButtons(songId) {
 
 previousButton.addEventListener('click', () => loadSavedMusic(currentPage - 1));
 nextButton.addEventListener('click', () => loadSavedMusic(currentPage + 1));
-
-loadSavedMusic();

@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
+import { requireUser } from './auth/routes.js';
 import { getMusicDb } from './music-db.js';
+import { ensureMusicIndexes } from './music-indexes.js';
 
 export const savedMusicRouter = Router();
+savedMusicRouter.use(requireUser);
 
 function errorResponse(res, status, code, message) {
   return res.status(status).json({ error: { code, message } });
@@ -111,9 +114,11 @@ savedMusicRouter.get('/', async (req, res) => {
 
   try {
     const savedMusic = (await getMusicDb()).collection('savedMusic');
-    const total = await savedMusic.countDocuments();
+    const userId = new ObjectId(req.user.id);
+    const total = await savedMusic.countDocuments({ userId });
     const records = await savedMusic
       .aggregate([
+        { $match: { userId } },
         {
           $lookup: {
             from: 'songs',
@@ -149,6 +154,8 @@ savedMusicRouter.post('/', async (req, res) => {
 
   try {
     const db = await getMusicDb();
+    await ensureMusicIndexes(db);
+    const userId = new ObjectId(req.user.id);
     const itemId = objectId(req.body.itemId);
     const item = await db
       .collection('songs')
@@ -156,9 +163,8 @@ savedMusicRouter.post('/', async (req, res) => {
     if (!item) return errorResponse(res, 404, 'NOT_FOUND', 'Song not found.');
 
     const savedMusic = db.collection('savedMusic');
-    await savedMusic.createIndex({ itemId: 1 }, { unique: true });
     const now = new Date();
-    const saved = { itemId, ...fields, createdAt: now, updatedAt: now };
+    const saved = { userId, itemId, ...fields, createdAt: now, updatedAt: now };
     const result = await savedMusic.insertOne(saved);
     return res.status(201).json({
       data: serializeSaved({ ...saved, _id: result.insertedId }, item),
@@ -188,7 +194,10 @@ savedMusicRouter.get('/:id', async (req, res) => {
 
   try {
     const db = await getMusicDb();
-    const saved = await db.collection('savedMusic').findOne({ _id: id });
+    const userId = new ObjectId(req.user.id);
+    const saved = await db
+      .collection('savedMusic')
+      .findOne({ _id: id, userId });
     if (!saved)
       return errorResponse(res, 404, 'NOT_FOUND', 'Saved song not found.');
     const item = await db
@@ -213,15 +222,16 @@ savedMusicRouter.patch('/:id', async (req, res) => {
 
   try {
     const db = await getMusicDb();
+    const userId = new ObjectId(req.user.id);
     const savedMusic = db.collection('savedMusic');
     const result = await savedMusic.updateOne(
-      { _id: id },
+      { _id: id, userId },
       { $set: { ...fields, updatedAt: new Date() } },
     );
     if (result.matchedCount === 0) {
       return errorResponse(res, 404, 'NOT_FOUND', 'Saved song not found.');
     }
-    const saved = await savedMusic.findOne({ _id: id });
+    const saved = await savedMusic.findOne({ _id: id, userId });
     const item = await db
       .collection('songs')
       .findOne({ _id: saved.itemId }, { projection: { title: 1, artist: 1 } });
@@ -242,11 +252,12 @@ savedMusicRouter.delete('/:id', async (req, res) => {
     );
 
   try {
+    const userId = new ObjectId(req.user.id);
     const result = await (
       await getMusicDb()
     )
       .collection('savedMusic')
-      .deleteOne({ _id: id });
+      .deleteOne({ _id: id, userId });
     if (result.deletedCount === 0) {
       return errorResponse(res, 404, 'NOT_FOUND', 'Saved song not found.');
     }

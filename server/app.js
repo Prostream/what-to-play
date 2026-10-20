@@ -5,6 +5,7 @@ import { gamesRouter, savedGamesRouter } from './games/routes.js';
 import { errorHandler, jsonWrites } from './http.js';
 import { musicRouter } from './music.js';
 import { savedMusicRouter } from './saved-music.js';
+import { blacklistedMusicRouter } from './blacklisted-music.js';
 
 export const app = express();
 if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
@@ -19,7 +20,8 @@ app.use('/api/auth', jsonWrites, authRouter);
 app.use('/api/games', gamesRouter);
 app.use('/api/saved-games', jsonWrites, savedGamesRouter);
 app.use('/api/music', musicRouter);
-app.use('/api/saved-music', savedMusicRouter);
+app.use('/api/saved-music', jsonWrites, savedMusicRouter);
+app.use('/api/blacklisted-music', jsonWrites, blacklistedMusicRouter);
 app.use('/api', (_req, res) =>
   res.status(404).json({
     error: { code: 'NOT_FOUND', message: 'API route was not found.' },

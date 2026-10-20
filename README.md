@@ -24,7 +24,7 @@ the runtime is not included in a fresh clone.
 | Module | Connection variables                    | Collections                                        |
 | ------ | --------------------------------------- | -------------------------------------------------- |
 | Games  | `MONGODB_URI`, `MONGODB_DB`             | `games`, `savedGames`, account/session collections |
-| Music  | `MUSIC_MONGODB_URI`, `MUSIC_MONGODB_DB` | `songs`, `savedMusic`                              |
+| Music  | `MUSIC_MONGODB_URI`, `MUSIC_MONGODB_DB` | `songs`, `savedMusic`, `blacklistedMusic`          |
 
 Use separate database names, even when both modules use one Atlas cluster.
 Music defaults to `what_to_play_music`; Games defaults to `what_to_play`.
@@ -57,9 +57,9 @@ After merging, verify the deployed commit; use Manual Deploy if needed.
 
 Develop Games on `Chunzhang` and Music on `Joshua`, then open PRs into `main`.
 See [TEAM_AGREEMENT.md](TEAM_AGREEMENT.md) for module boundaries.
-Games supports guided discovery, accounts, private collections, and favorites at `/games.html`.
-YouTube opens external searches. Music search, recommendations, and shared saved-song APIs
-are implemented; its page is pending. Remaining deliverables include design mockups,
+Games supports guided discovery, private collections, and favorites at `/games.html`.
+YouTube opens external searches. The same account signs in on both pages. Music has discovery,
+search, private saved songs, and a private blacklist at `/music.html`. Remaining deliverables include design mockups,
 class link, screenshots, code review, narrated video, and submission links.
 
 ## License
