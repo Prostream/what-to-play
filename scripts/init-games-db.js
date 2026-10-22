@@ -12,5 +12,5 @@ try {
   );
   process.exitCode = 1;
 } finally {
-  await closeDb();
+  await closeDb(); //does it make sense to close the connect after loading?
 }
