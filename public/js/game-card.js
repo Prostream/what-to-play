@@ -55,7 +55,7 @@ export function gameCard(game, action, saved) {
     save,
     link(
       'Steam ↗',
-      `https://store.steampowered.com/app/${game.steamId}/`,
+      `https://store.steampowered.com/app/${game.steamId}/`, //one of my favorite features in this project is being able to go straight to the steam link
       'store-link',
     ),
   );
