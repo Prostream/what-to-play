@@ -19,7 +19,7 @@ const genreNames = new Map([
   ['29', 'massively multiplayer'],
   ['37', 'free to play'],
   ['70', 'early access'],
-]);
+]); // curious if theres any significance to these genre numbers
 const excludedGenres = new Set([
   '51',
   '52',
