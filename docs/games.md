@@ -6,7 +6,7 @@ The Games owner requested accounts and game-based discovery after the original p
 
 `/games.html` follows the supplied sketch: top navigation for discovery, saved games and favorites; a central guided conversation; moving game covers behind it. Buttons handle choices; only game search and account/collection forms require typing. This uses Vanilla ES modules and CSS animation, without a chat model or Live2D runtime. Motion can be paused and respects reduced-motion preferences.
 
-Visitors can browse, search, explore a genre, and get tag-based recommendations without signing in. Starting from a game preselects its tags; users keep preferred tags and optionally exclude others. Results rank by shared tag count, then title and ID. Excluded tags take precedence and the seed game is omitted. Genre exploration randomly samples matching games. YouTube options open external searches, not a live video feed.
+Visitors can browse, search, explore a genre, and get tag-based recommendations without signing in. Starting from a game preselects its tags; users keep preferred tags and optionally exclude others. Results rank by shared tag count, then title and ID. <-[I did not appreciate this feature when doing a demo, very cool] Excluded tags take precedence and the seed game is omitted. Genre exploration randomly samples matching games. YouTube options open external searches, not a live video feed.
 
 ## Accounts and saved games
 
