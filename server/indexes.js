@@ -1,4 +1,4 @@
-export async function ensureIndexes(db) {
+export async function ensureIndexes(db) { //Interesting way to track user game collections
   await db.collection('games').createIndex({ title: 1, _id: 1 });
   await db
     .collection('games')
