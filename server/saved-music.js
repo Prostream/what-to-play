@@ -7,6 +7,9 @@ import { ensureMusicIndexes } from './music-indexes.js';
 export const savedMusicRouter = Router();
 savedMusicRouter.use(requireUser);
 
+// These helpers are copied in music.js and blacklisted-music.js too, and they've
+// drifted from the games versions in http.js (no notes/tag limits here, for
+// one). Could we just use fail/pageQuery/objectId from http.js instead?
 function errorResponse(res, status, code, message) {
   return res.status(status).json({ error: { code, message } });
 }
