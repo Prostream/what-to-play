@@ -100,6 +100,9 @@ function setStatus(element, message, state) {
   element.dataset.state = state;
 }
 
+// This is basically api() from js/api.js, and the same fetch/json/throw
+// pattern shows up a few more times below and in saved-music.js. Using api()
+// everywhere would also let us catch a 401 and sign the user out properly.
 async function requestMusic(path, options) {
   const response = await fetch(path, options);
   const body = await response.json();

@@ -3,6 +3,8 @@ import { getDb } from './db.js';
 import { ensureIndexes } from './indexes.js';
 
 try {
+  // Music indexes only get created on the first save/blacklist request right
+  // now. Worth calling ensureMusicIndexes here too so it fails at startup.
   await ensureIndexes(await getDb());
   const port = process.env.PORT || 3000;
   app.listen(port, '0.0.0.0', () => {
